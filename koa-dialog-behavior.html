@@ -1,0 +1,22 @@
+<!--
+@license
+Copyright (c) 2015 Team King of App. All rights reserved.
+This code may only be used under the MIT license.
+-->
+
+<link rel="import" href="../polymer/polymer.html">
+<link rel="import" href="../iron-overlay-behavior/iron-overlay-behavior.html">
+
+<script>
+  Polymer.KoaDialogBehaviorImpl = {
+    hostAttributes: {
+      'role': 'dialog',
+      tabindex: -1
+    }
+  };
+
+  Polymer.KoaDialogBehavior = [
+    Polymer.IronOverlayBehavior,
+    Polymer.KoaDialogBehaviorImpl
+  ];
+</script>

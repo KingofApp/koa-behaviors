@@ -1,0 +1,39 @@
+<!--
+@license
+Copyright (c) 2015 Team King of App. All rights reserved.
+This code may only be used under the MIT license.
+-->
+
+<link rel="import" href="../polymer/polymer.html">
+<link rel="import" href="../iron-behaviors/iron-button-state.html">
+<link rel="import" href="../iron-behaviors/iron-control-state.html">
+<link rel="import" href="../iron-form-element-behavior/iron-form-element-behavior.html">
+
+<script>
+  Polymer.KoaDropdownMenuBehaviorImpl = {
+    properties: {
+      /**
+       * The label for the dropdown.
+       */
+      label: {
+        type: String
+      },
+
+      /**
+       * True if the dropdown is open. Otherwise, false.
+       */
+      opened: {
+        type: Boolean,
+        notify: true,
+        value: false
+      }
+    }
+  };
+
+  Polymer.KoaDropdownMenuBehavior = [
+    Polymer.IronButtonState,
+    Polymer.IronControlState,
+    Polymer.IronFormElementBehavior,
+    Polymer.KoaDropdownMenuBehaviorImpl
+  ];
+</script>

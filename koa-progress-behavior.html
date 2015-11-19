@@ -1,0 +1,57 @@
+<!--
+@license
+Copyright (c) 2015 Team King of App. All rights reserved.
+This code may only be used under the MIT license.
+-->
+
+<link rel="import" href="../polymer/polymer.html">
+<link rel="import" href="../iron-range-behavior/iron-range-behavior.html">
+
+<script>
+  Polymer.KoaProgressBehaviorImpl = {
+    hostAttributes: {
+      role: 'progressbar'
+    },
+
+    properties: {
+      /**
+       * True if the progress is disabled.
+       */
+      disabled: {
+        type: Boolean,
+        value: false,
+        reflectToAttribute: true
+      },
+
+      /**
+       * Use an indeterminate progress indicator.
+       */
+      indeterminate: {
+        type: Boolean,
+        value: false
+      },
+
+      /**
+       * The number that represents the current secondary progress.
+       */
+      secondaryProgress: {
+        type: Number,
+        value: 0
+      },
+
+      /**
+       * The secondary ratio
+       */
+      secondaryRatio: {
+        type: Number,
+        value: 0,
+        readOnly: true
+      }
+    }
+  };
+
+  Polymer.KoaProgressBehavior = [
+    Polymer.IronRangeBehavior,
+    Polymer.KoaProgressBehaviorImpl
+  ];
+</script>

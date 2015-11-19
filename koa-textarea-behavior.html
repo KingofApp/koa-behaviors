@@ -1,0 +1,50 @@
+<!--
+@license
+Copyright (c) 2015 Team King of App. All rights reserved.
+This code may only be used under the MIT license.
+-->
+
+<link rel="import" href="../polymer/polymer.html">
+<link rel="import" href="../paper-input/paper-input-behavior.html">
+
+<script>
+  Polymer.KoaTextareaBehaviorImpl = {
+    properties: {
+      /**
+       * The label for this input. Bind this to `<paper-input-container>`'s `label` property.
+       */
+      label: {
+        type: String
+      },
+
+      /**
+       * The initial number of rows.
+       */
+      rows: {
+        type: Number,
+        value: 1
+      },
+
+      /**
+       * The maximum number of rows this element can grow to until it scrolls.
+       * 0 means no maximum.
+       */
+      maxRows: {
+       type: Number,
+       value: 0
+      }
+    },
+
+    /**
+     * Returns a reference to the input element.
+     */
+    get inputElement() {
+      return this.$.input;
+    }
+  };
+
+  Polymer.KoaTextareaBehavior = [
+    Polymer.PaperInputBehavior,
+    Polymer.KoaTextareaBehaviorImpl
+  ];
+</script>

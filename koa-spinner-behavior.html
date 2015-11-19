@@ -1,0 +1,37 @@
+<!--
+@license
+Copyright (c) 2015 Team King of App. All rights reserved.
+This code may only be used under the MIT license.
+-->
+
+<link rel="import" href="../polymer/polymer.html">
+
+<script>
+  Polymer.KoaSpinnerBehaviorImpl = {
+    properties: {
+      /**
+       * Displays the spinner.
+       */
+      active: {
+        type: Boolean,
+        value: false,
+        reflectToAttribute: true
+      },
+
+      /**
+       * Alternative text content for accessibility support.
+       * If alt is present, it will add an aria-label whose content matches
+       * alt when active.
+       * If alt is not present, it will default to 'loading' as the alt value.
+       */
+      alt: {
+        type: String,
+        value: 'loading'
+      }
+    }
+  };
+
+  Polymer.KoaSpinnerBehavior = [
+    Polymer.KoaSpinnerBehaviorImpl
+  ];
+</script>

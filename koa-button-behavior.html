@@ -1,0 +1,44 @@
+<!--
+@license
+Copyright (c) 2015 Team King of App. All rights reserved.
+This code may only be used under the MIT license.
+-->
+
+<link rel="import" href="../polymer/polymer.html">
+<link rel="import" href="../iron-behaviors/iron-button-state.html">
+<link rel="import" href="../iron-behaviors/iron-control-state.html">
+
+<script>
+  Polymer.KoaButtonBehaviorImpl = {
+    hostAttributes: {
+      role: 'button',
+      tabindex: 0
+    },
+
+    properties: {
+      /**
+       * If true, the button should be bigger.
+       */
+      big: {
+        type: Boolean,
+        reflectToAttribute: true,
+        value: false
+      },
+
+      /**
+       * If true, the button should  have a link appearance.
+       */
+      link: {
+        type: Boolean,
+        reflectToAttribute: true,
+        value: false
+      }
+    }
+  };
+
+  Polymer.KoaButtonBehavior = [
+    Polymer.IronButtonState,
+    Polymer.IronControlState,
+    Polymer.KoaButtonBehaviorImpl
+  ];
+</script>

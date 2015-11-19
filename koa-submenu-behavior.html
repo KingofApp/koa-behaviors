@@ -1,0 +1,28 @@
+<!--
+@license
+Copyright (c) 2015 Team King of App. All rights reserved.
+This code may only be used under the MIT license.
+-->
+
+<link rel="import" href="../polymer/polymer.html">
+<link rel="import" href="../iron-behaviors/iron-control-state.html">
+
+<script>
+  Polymer.KoaSubmenuBehaviorImpl = {
+    properties: {
+      /**
+       * Set opened to true to show the collapse element and to false to hide it.
+       */
+      opened: {
+        type: Boolean,
+        value: false,
+        notify: true
+      }
+    }
+  };
+
+  Polymer.KoaSubmenuBehavior = [
+    Polymer.IronControlState,
+    Polymer.KoaSubmenuBehaviorImpl
+  ];
+</script>

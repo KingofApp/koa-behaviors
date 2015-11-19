@@ -1,0 +1,30 @@
+<!--
+@license
+Copyright (c) 2015 Team King of App. All rights reserved.
+This code may only be used under the MIT license.
+-->
+
+<link rel="import" href="../polymer/polymer.html">
+<link rel="import" href="../iron-a11y-keys-behavior/iron-a11y-keys-behavior.html">
+<link rel="import" href="../iron-behaviors/iron-control-state.html">
+
+<script>
+  Polymer.KoaMenuButtonBehaviorImpl = {
+    properties: {
+      /**
+       * True if the content is currently displayed.
+       */
+      opened: {
+        type: Boolean,
+        value: false,
+        notify: true
+      }
+    }
+  };
+
+  Polymer.KoaMenuButtonBehavior = [
+    Polymer.IronControlState,
+    Polymer.IronA11yKeysBehavior,
+    Polymer.KoaMenuButtonBehaviorImpl
+  ];
+</script>

@@ -12,7 +12,9 @@ This code may only be used under the MIT license.
 <script>
   Polymer.KoaCheckboxBehaviorImpl = {
     hostAttributes: {
-      role: 'checkbox'
+      'aria-checked': false,
+      role: 'checkbox',
+      tabindex: 0
     }
   };
 

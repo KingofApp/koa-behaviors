@@ -25,6 +25,20 @@ This code may only be used under the MIT license.
         value: 'standard',
         reflectToAttribute: true
       }
+    },
+
+    /**
+     * Returns the header element
+     */
+    get header() {
+      return Polymer.dom(this.$.headerContent).getDistributedNodes()[0];
+    },
+
+    /**
+     * Returns the scrollable element.
+     */
+    get scroller() {
+      return this.mode === 'scroll' ? this : this.$.mainContainer;
     }
   };
 

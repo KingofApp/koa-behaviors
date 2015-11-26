@@ -37,7 +37,16 @@ This code may only be used under the MIT license.
        * Specifies the alternate text for the button, for accessibility.
        */
       alt: {
-        type: String
+        type: String,
+          observer: '_altChanged'
+      }
+    },
+
+    _altChanged: function(newValue, oldValue) {
+      var label = this.getAttribute('aria-label');
+      // Don't stomp over a user-set aria-label.
+      if (!label || oldValue == label) {
+        this.setAttribute('aria-label', newValue);
       }
     }
   };

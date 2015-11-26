@@ -15,19 +15,71 @@ This code may only be used under the MIT license.
       active: {
         type: Boolean,
         value: false,
-        reflectToAttribute: true
+        reflectToAttribute: true,
+        observer: '__activeChanged'
       },
 
       /**
        * Alternative text content for accessibility support.
-       * If alt is present, it will add an aria-label whose content matches
-       * alt when active.
+       * If alt is present, it will add an aria-label whose content matches alt when active.
        * If alt is not present, it will default to 'loading' as the alt value.
        */
       alt: {
         type: String,
-        value: 'loading'
+        value: 'loading',
+        observer: '__altChanged'
+      },
+
+      __coolingDown: {
+        type: Boolean,
+        value: false
+      },
+
+      __spinnerContainerClassName: {
+        type: String,
+        computed: '__computeSpinnerContainerClassName(active, __coolingDown)'
       }
+    },
+
+    listeners: {
+      'animationend': '__reset',
+      'webkitAnimationEnd': '__reset'
+    },
+
+    __computeSpinnerContainerClassName: function(active, coolingDown) {
+      return [
+        active || coolingDown ? 'active' : '',
+        coolingDown ? 'cooldown' : ''
+      ].join(' ');
+    },
+
+    __activeChanged: function(active, old) {
+      this.__setAriaHidden(!active);
+      this.__coolingDown = !active && old;
+    },
+
+    __altChanged: function(alt) {
+      // user-provided `aria-label` takes precedence over prototype default
+      if (alt === this.getPropertyInfo('alt').value) {
+        this.alt = this.getAttribute('aria-label') || alt;
+      } else {
+        this.__setAriaHidden(alt==='');
+        this.setAttribute('aria-label', alt);
+      }
+    },
+
+    __setAriaHidden: function(hidden) {
+      var attr = 'aria-hidden';
+      if (hidden) {
+        this.setAttribute(attr, 'true');
+      } else {
+        this.removeAttribute(attr);
+      }
+    },
+
+    __reset: function() {
+      this.active = false;
+      this.__coolingDown = false;
     }
   };
 

@@ -15,6 +15,7 @@ This code may only be used under the MIT license.
       heading: {
         type: String,
         value: ''
+        observer: '_headingChanged'
       },
 
       /**
@@ -42,6 +43,11 @@ This code may only be used under the MIT license.
         type: Boolean,
         value: false
       }
+    },
+
+    _headingChanged: function(heading) {
+      var label = this.getAttribute('aria-label');
+      this.setAttribute('aria-label', heading);
     }
   };
 

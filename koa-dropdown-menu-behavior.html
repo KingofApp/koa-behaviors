@@ -5,17 +5,66 @@ This code may only be used under the MIT license.
 -->
 
 <link rel="import" href="../polymer/polymer.html">
+<link rel="import" href="../iron-a11y-keys-behavior/iron-a11y-keys-behavior.html">
 <link rel="import" href="../iron-behaviors/iron-button-state.html">
 <link rel="import" href="../iron-behaviors/iron-control-state.html">
 <link rel="import" href="../iron-form-element-behavior/iron-form-element-behavior.html">
+<link rel="import" href="../iron-selector/iron-selectable.html">
+<link rel="import" href="../iron-validatable-behavior/iron-validatable-behavior.html">
 
 <script>
   Polymer.KoaDropdownMenuBehaviorImpl = {
+    hostAttributes: {
+      'aria-autocomplete': 'none',
+      'aria-haspopup': 'true',
+      role: 'combobox'
+    },
+
     properties: {
+      /**
+       * The derived "label" of the currently selected item. This value
+       * is the `label` property on the selected item if set, or else the
+       * trimmed text content of the selected item.
+       */
+      selectedItemLabel: {
+        type: String,
+        notify: true,
+        readOnly: true
+      },
+
+      /**
+       * The last selected item. An item is selected if the dropdown menu has
+       * a child with class `dropdown-content`, and that child triggers an
+       * `iron-select` event with the selected `item` in the `detail`.
+       */
+      selectedItem: {
+        type: Object,
+        notify: true,
+        readOnly: true
+      },
+
+      /**
+       * The value for this element that will be used when submitting in
+       * a form. It is read only, and will always have the same value
+       * as `selectedItemLabel`.
+       */
+      value: {
+        type: String,
+        notify: true,
+        readOnly: true
+      },
+
       /**
        * The label for the dropdown.
        */
       label: {
+        type: String
+      },
+
+      /**
+       * The placeholder for the dropdown.
+       */
+      placeholder: {
         type: String
       },
 
@@ -25,7 +74,118 @@ This code may only be used under the MIT license.
       opened: {
         type: Boolean,
         notify: true,
+        value: false,
+        observer: '_openedChanged'
+      },
+
+      /**
+       * Set to true to disable animations when opening and closing the
+       * dropdown.
+       */
+      noAnimations: {
+        type: Boolean,
         value: false
+      }
+    },
+
+    listeners: {
+      'tap': '_onTap'
+    },
+
+    keyBindings: {
+      'up down': 'open',
+      'esc': 'close'
+    },
+
+    observers: [
+      '_selectedItemChanged(selectedItem)'
+    ],
+
+    attached: function() {
+      // NOTE: Due to timing, a preselected value in a `IronSelectable`
+      // child will cause an `iron-select` event to fire while the element is
+      // still in a `DocumentFragment`. This has the effect of causing
+      // handlers not to fire. So, we double check this value on attached:
+      var contentElement = this.contentElement;
+      if (contentElement && contentElement.selectedItem) {
+        this._setSelectedItem(contentElement.selectedItem);
+      }
+    },
+
+    /**
+     * The content element that is contained by the dropdown menu, if any.
+     */
+    get contentElement() {
+      return Polymer.dom(this.$.content).getDistributedNodes()[0];
+    },
+
+    /**
+     * Show the dropdown content.
+     */
+    open: function() {
+      this.$.menuButton.open();
+    },
+
+    /**
+     * Hide the dropdown content.
+     */
+    close: function() {
+      this.$.menuButton.close();
+    },
+
+    /**
+     * A handler that is called when `iron-select` is fired.
+     */
+    _onIronSelect: function(event) {
+      this._setSelectedItem(event.detail.item);
+    },
+
+    /**
+     * A handler that is called when `iron-deselect` is fired.
+     */
+    _onIronDeselect: function(event) {
+      this._setSelectedItem(null);
+    },
+
+    /**
+     * A handler that is called when the dropdown is tapped.
+     */
+    _onTap: function(event) {
+      if (Polymer.Gestures.findOriginalTarget(event) === this) {
+        this.open();
+      }
+    },
+
+    /**
+     * Compute the label for the dropdown given a selected item.
+     */
+    _selectedItemChanged: function(selectedItem) {
+      var value = '';
+      if (!selectedItem) {
+        value = '';
+      } else {
+        value = selectedItem.label || selectedItem.textContent.trim();
+      }
+
+      this._setValue(value);
+      this._setSelectedItemLabel(value);
+    },
+
+    /**
+     * Returns false if the element is required and does not have a selection,
+     * and true otherwise.
+     * @return {boolean} true if `required` is false, or if `required` is true
+     * and the element has a valid selection.
+     */
+    _getValidity: function() {
+      return this.disabled || !this.required || (this.required && this.value);
+    },
+
+    _openedChanged: function() {
+      var openState = this.opened ? 'true' : 'false';
+      var e = this.contentElement;
+      if (e) {
+        e.setAttribute('aria-expanded', openState);
       }
     }
   };
@@ -34,6 +194,7 @@ This code may only be used under the MIT license.
     Polymer.IronButtonState,
     Polymer.IronControlState,
     Polymer.IronFormElementBehavior,
+    Polymer.IronValidatableBehavior,
     Polymer.KoaDropdownMenuBehaviorImpl
   ];
 </script>

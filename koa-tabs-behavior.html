@@ -5,17 +5,138 @@ This code may only be used under the MIT license.
 -->
 
 <link rel="import" href="../polymer/polymer.html">
-<link rel="import" href="../iron-menu-behavior/iron-menu-behavior.html">
+<link rel="import" href="../iron-menu-behavior/iron-menubar-behavior.html">
 
 <script>
   Polymer.KoaTabsBehaviorImpl = {
     hostAttributes: {
       role: 'tablist'
+    },
+
+    properties: {
+      /**
+       * If true, tabs are scrollable and the tab width is based on the label width.
+       */
+      scrollable: {
+        type: Boolean,
+        value: false
+      },
+
+      /**
+       * Gets or sets the selected element. The default is to use the index of the item.
+       */
+      selected: {
+        type: String,
+        notify: true
+      },
+
+      selectable: {
+        type: String,
+        value: 'paper-tab'
+      },
+
+      _leftHidden: {
+        type: Boolean,
+        value: false
+      },
+
+      _rightHidden: {
+        type: Boolean,
+        value: false
+      },
+
+      _previousTab: {
+        type: Object
+      }
+    },
+
+    listeners: {
+      'iron-select': '_onIronSelect',
+      'iron-deselect': '_onIronDeselect'
+    },
+
+    ready: function() {
+      this.setScrollDirection('y', this.$.tabsContainer);
+    },
+
+    _computeTabsContentClass: function(scrollable) {
+      return scrollable ? 'scrollable' : 'horizontal';
+    },
+
+    _onIronSelect: function(event) {
+      this._tabChanged(event.detail.item, this._previousTab);
+      this._previousTab = event.detail.item;
+      this.cancelDebouncer('tab-changed');
+    },
+
+    _onIronDeselect: function(event) {
+      this.debounce('tab-changed', function() {
+        this._tabChanged(null, this._previousTab);
+      // See polymer/polymer#1305
+      }, 1);
+    },
+
+    get _tabContainerScrollSize () {
+      return Math.max(
+        0,
+        this.$.tabsContainer.scrollWidth - this.$.tabsContainer.offsetWidth
+      );
+    },
+
+    _scroll: function(e, detail) {
+      if (!this.scrollable) {
+        return;
+      }
+
+      var ddx = (detail && -detail.ddx) || 0;
+      this._affectScroll(ddx);
+    },
+
+    _down: function(e) {
+      // go one beat async to defeat IronMenuBehavior
+      // autorefocus-on-no-selection timeout
+      this.async(function() {
+        if (this._defaultFocusAsync) {
+          this.cancelAsync(this._defaultFocusAsync);
+          this._defaultFocusAsync = null;
+        }
+      }, 1);
+    },
+
+    _affectScroll: function(dx) {
+      this.$.tabsContainer.scrollLeft += dx;
+
+      var scrollLeft = this.$.tabsContainer.scrollLeft;
+
+      this._leftHidden = scrollLeft === 0;
+      this._rightHidden = scrollLeft === this._tabContainerScrollSize;
+    },
+
+    _tabChanged: function(tab, old) {
+      var r = this.$.tabsContent.getBoundingClientRect();
+      var tabRect = tab.getBoundingClientRect();
+      var tabOffsetLeft = tabRect.left - r.left;
+
+      if (this.scrollable) {
+        this._scrollToSelectedIfNeeded(tabRect.width, tabOffsetLeft);
+      }
+    },
+
+    _scrollToSelectedIfNeeded: function(tabWidth, tabOffsetLeft) {
+      var l = tabOffsetLeft - this.$.tabsContainer.scrollLeft;
+      if (l < 0) {
+        this.$.tabsContainer.scrollLeft += l;
+      } else {
+        l += (tabWidth - this.$.tabsContainer.offsetWidth);
+        if (l > 0) {
+          this.$.tabsContainer.scrollLeft += l;
+        }
+      }
     }
   };
 
   Polymer.KoaTabsBehavior = [
-    Polymer.IronMenuBehavior,
+    Polymer.IronMenubarBehavior,
     Polymer.KoaTabsBehaviorImpl
   ];
 </script>

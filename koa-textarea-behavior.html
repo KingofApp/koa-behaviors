@@ -5,15 +5,18 @@ This code may only be used under the MIT license.
 -->
 
 <link rel="import" href="../polymer/polymer.html">
-<link rel="import" href="../paper-input/paper-input-behavior.html">
+<link rel="import" href="../../bower_components/koa-behaviors/koa-input-behavior.html">
 
 <script>
   Polymer.KoaTextareaBehaviorImpl = {
     properties: {
-      /**
-       * The label for this input. Bind this to `<paper-input-container>`'s `label` property.
-       */
-      label: {
+      _ariaLabelledBy: {
+        observer: '_ariaLabelledByChanged',
+        type: String
+      },
+
+      _ariaDescribedBy: {
+        observer: '_ariaDescribedByChanged',
         type: String
       },
 
@@ -26,8 +29,8 @@ This code may only be used under the MIT license.
       },
 
       /**
-       * The maximum number of rows this element can grow to until it scrolls.
-       * 0 means no maximum.
+       * The maximum number of rows this element can grow to until it
+       * scrolls. 0 means no maximum.
        */
       maxRows: {
        type: Number,
@@ -35,16 +38,17 @@ This code may only be used under the MIT license.
       }
     },
 
-    /**
-     * Returns a reference to the input element.
-     */
-    get inputElement() {
-      return this.$.input;
+    _ariaLabelledByChanged: function(ariaLabelledBy) {
+      this.$.input.textarea.setAttribute('aria-labelledby', ariaLabelledBy);
+    },
+
+    _ariaDescribedByChanged: function(ariaDescribedBy) {
+      this.$.input.textarea.setAttribute('aria-describedby', ariaDescribedBy);
     }
   };
 
   Polymer.KoaTextareaBehavior = [
-    Polymer.PaperInputBehavior,
+    Polymer.KoaInputBehavior,
     Polymer.KoaTextareaBehaviorImpl
   ];
 </script>

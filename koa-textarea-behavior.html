@@ -44,6 +44,10 @@ This code may only be used under the MIT license.
 
     _ariaDescribedByChanged: function(ariaDescribedBy) {
       this.$.input.textarea.setAttribute('aria-describedby', ariaDescribedBy);
+    },
+
+    get _focusableElement() {
+      return this.$.input.textarea;
     }
   };
 

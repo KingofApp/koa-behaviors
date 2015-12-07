@@ -20,6 +20,18 @@ This code may only be used under the MIT license.
       role: 'combobox'
     },
 
+    /**
+     * Fired when the dropdown opens.
+     *
+     * @event dropdown-open
+     */
+
+    /**
+     * Fired when the dropdown closes.
+     *
+     * @event dropdown-close
+     */
+
     properties: {
       /**
        * The derived "label" of the currently selected item. This value
@@ -85,6 +97,24 @@ This code may only be used under the MIT license.
       noAnimations: {
         type: Boolean,
         value: false
+      },
+
+      /**
+       * The orientation against which to align the menu dropdown
+       * horizontally relative to the dropdown trigger.
+       */
+      horizontalAlign: {
+        type: String,
+        value: 'right'
+      },
+
+      /**
+       * The orientation against which to align the menu dropdown
+       * vertically relative to the dropdown trigger.
+       */
+      verticalAlign: {
+        type: String,
+        value: 'top'
       }
     },
 

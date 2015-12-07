@@ -10,7 +10,7 @@ This code may only be used under the MIT license.
 <link rel="import" href="../iron-form-element-behavior/iron-form-element-behavior.html">
 
 <script>
-  Polymer.IronInputBehaviorImpl = {
+  Polymer.KoaInputBehaviorImpl = {
     hostAttributes: {
       tabindex: 0
     },
@@ -21,6 +21,14 @@ This code may only be used under the MIT license.
        *
        * @event change
        */
+
+      /**
+       * The label for this input. Bind this to `<label>`'s content and `hidden` property, e.g.
+       * `<label hidden$="[[!label]]">[[label]]</label>` in your `template`
+       */
+      label: {
+        type: String
+      },
 
       /**
        * The value for this input. Bind this to the `<input is="iron-input">`'s `bindValue`
@@ -91,7 +99,8 @@ This code may only be used under the MIT license.
       },
 
       /**
-       * Set to true to mark the input as required. Bind this to the `<input is="iron-input">`'s `required` property.
+       * Set to true to mark the input as required. Bind this to the `<input is="iron-input">`'s
+       * `required` property.
        */
       required: {
         type: Boolean,
@@ -99,9 +108,26 @@ This code may only be used under the MIT license.
       },
 
       /**
+       * The error message to display when the input is invalid. Bind this to the
+       * `<koa-input-error>`'s content, if using.
+       */
+      errorMessage: {
+        type: String
+      },
+
+      /**
        * Set to true to show a character counter.
        */
       charCounter: {
+        type: Boolean,
+        value: false
+      },
+
+      /**
+       * Set to true to auto-validate the input value. Bind this to the `<koa-input-container>`'s
+       * `autoValidate` property.
+       */
+      autoValidate: {
         type: Boolean,
         value: false
       },
@@ -186,7 +212,7 @@ This code may only be used under the MIT license.
       },
 
       /**
-       * A placeholder string in addition to the label. If this is set, the label will always float.
+       * A placeholder string in addition to the label.
        */
       placeholder: {
         type: String
@@ -251,111 +277,6 @@ This code may only be used under the MIT license.
        */
       multiple: {
         type: Boolean
-      }
-    },
-
-    listeners: {
-      'focus': '_onFocus'
-    },
-
-    keyBindings: {
-      'shift+tab:keydown': '_onShiftTabDown'
-    },
-
-    /**
-     * Returns a reference to the input element.
-     * Override this method to select the input element.
-     */
-    get inputElement() {
-      return this.querySelector('input[is="iron-input"]');
-    },
-
-    /**
-     * Returns a reference to the focusable element.
-     */
-    get _focusableElement() {
-      return this.inputElement;
-    },
-
-    /**
-     * Forward focus to inputElement
-     */
-    _onFocus: function() {
-      if (!this._shiftTabPressed) {
-        this._focusableElement.focus();
-      }
-    },
-
-    /**
-     * Handler that is called when a shift+tab keypress is detected by the menu.
-     *
-     * @param {CustomEvent} event A key combination event.
-     */
-    _onShiftTabDown: function(event) {
-      var oldTabIndex = this.getAttribute('tabindex');
-      this._shiftTabPressed = true;
-      this.setAttribute('tabindex', '-1');
-      this.async(function() {
-        this.setAttribute('tabindex', oldTabIndex);
-        this._shiftTabPressed = false;
-      }, 1);
-    },
-
-    _onChange:function(event) {
-      // In the Shadow DOM, the `change` event is not leaked into the
-      // ancestor tree, so we must do this manually.
-      // See https://w3c.github.io/webcomponents/spec/shadow/#events-that-are-not-leaked-into-ancestor-trees.
-      if (this.shadowRoot) {
-        this.fire(event.type, {sourceEvent: event}, {
-          node: this,
-          bubbles: event.bubbles,
-          cancelable: event.cancelable
-        });
-      }
-    }
-  };
-
-  Polymer.IronInputBehavior = [
-    Polymer.IronA11yKeysBehavior,
-    Polymer.IronControlState,
-    Polymer.IronInputBehaviorImpl
-  ];
-
-
-  Polymer.KoaInputBehaviorImpl = {
-    properties: {
-      /**
-       * The label for this input. Bind this to `<label>`'s content and `hidden` property, e.g.
-       * `<label hidden$="[[!label]]">[[label]]</label>` in your `template`
-       */
-      label: {
-        type: String
-      },
-
-      /**
-       * The error message to display when the input is invalid. Bind this to the
-       * `<koa-input-error>`'s content, if using.
-       */
-      errorMessage: {
-        type: String
-      },
-
-      /**
-       * Set to true to auto-validate the input value. Bind this to the `<koa-input-container>`'s
-       * `autoValidate` property.
-       */
-      autoValidate: {
-        type: Boolean,
-        value: false
-      },
-
-      /**
-       * A placeholder string in addition to the label. If this is set, the label will always float.
-       */
-      placeholder: {
-        type: String,
-        // need to set a default so _computeAlwaysFloatLabel is run
-        value: ''
       },
 
       _ariaDescribedBy: {
@@ -370,18 +291,30 @@ This code may only be used under the MIT license.
     },
 
     listeners: {
-      'addon-attached': '_onAddonAttached'
+      'addon-attached': '_onAddonAttached',
+      'focus': '_onFocus'
     },
 
     observers: [
       '_focusedControlStateChanged(focused)'
     ],
 
+    keyBindings: {
+      'shift+tab:keydown': '_onShiftTabDown'
+    },
+
     /**
-     * Overriding the IronInputBehavior method.
+     * Returns a reference to the input element.
      */
     get inputElement() {
       return this.$.input;
+    },
+
+    /**
+     * Returns a reference to the focusable element.
+     */
+    get _focusableElement() {
+      return this.inputElement;
     },
 
     attached: function() {
@@ -418,6 +351,29 @@ This code may only be used under the MIT license.
     },
 
     /**
+     * Forward focus to inputElement
+     */
+    _onFocus: function() {
+      if (!this._shiftTabPressed) {
+        this._focusableElement.focus();
+      }
+    },
+
+    /**
+     * Handler that is called when a shift+tab keypress is detected by the menu.
+     *
+     * @param {CustomEvent} event A key combination event.
+     */
+    _onShiftTabDown: function(event) {
+      var oldTabIndex = this.getAttribute('tabindex');
+      this._shiftTabPressed = true;
+      this.setAttribute('tabindex', '-1');
+      this.async(function() {
+        this.setAttribute('tabindex', oldTabIndex);
+        this._shiftTabPressed = false;
+      }, 1);
+    },
+    /**
      * If `autoValidate` is true, then validates the element.
      */
     _handleAutoValidate: function() {
@@ -449,7 +405,7 @@ This code may only be used under the MIT license.
 
     _focusedControlStateChanged: function(focused) {
       // IronControlState stops the focus and blur events in order to redispatch them on the host
-      // element, but input-container listens to those events. Since there are more
+      // element, but koa-input-container listens to those events. Since there are more
       // pending work on focus/blur in IronControlState, I'm putting in this hack to get the
       // input focus state working for now.
       if (!this.$.container) {
@@ -479,12 +435,26 @@ This code may only be used under the MIT license.
         label.id = labelledBy;
       }
       this._ariaLabelledBy = labelledBy;
+    },
+
+    _onChange:function(event) {
+      // In the Shadow DOM, the `change` event is not leaked into the
+      // ancestor tree, so we must do this manually.
+      // See https://w3c.github.io/webcomponents/spec/shadow/#events-that-are-not-leaked-into-ancestor-trees.
+      if (this.shadowRoot) {
+        this.fire(event.type, {sourceEvent: event}, {
+          node: this,
+          bubbles: event.bubbles,
+          cancelable: event.cancelable
+        });
+      }
     }
   };
 
   Polymer.KoaInputBehavior = [
     Polymer.IronFormElementBehavior,
-    Polymer.IronInputBehavior,
+    Polymer.IronControlState,
+    Polymer.IronA11yKeysBehavior,
     Polymer.KoaInputBehaviorImpl
   ];
 
@@ -541,7 +511,7 @@ This code may only be used under the MIT license.
 
       _inputSelector: {
         type: String,
-        value: 'input,textarea,input-input'
+        value: 'input,textarea,iron-autogrow-textarea'
       },
 
       _boundOnFocus: {
@@ -595,6 +565,9 @@ This code may only be used under the MIT license.
     },
 
     ready: function() {
+      if (!this._addons) {
+        this._addons = [];
+      }
       this.addEventListener('focus', this._boundOnFocus, true);
       this.addEventListener('blur', this._boundOnBlur, true);
       if (this.attrForValue) {
@@ -693,16 +666,6 @@ This code may only be used under the MIT license.
       for (var addon, index = 0; addon = this._addons[index]; index++) {
         addon.update(state);
       }
-    },
-
-    _computeInputContentClass: function(focused, invalid, _inputHasContent) {
-      var cls = 'input-content';
-
-      if (_inputHasContent) {
-        cls += ' label-is-hidden';
-      }
-
-      return cls;
     },
 
     _computeUnderlineClass: function(focused, invalid) {

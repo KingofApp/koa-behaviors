@@ -33,11 +33,6 @@ This code may only be used under the MIT license.
       __coolingDown: {
         type: Boolean,
         value: false
-      },
-
-      __spinnerContainerClassName: {
-        type: String,
-        computed: '__computeSpinnerContainerClassName(active, __coolingDown)'
       }
     },
 
@@ -46,7 +41,7 @@ This code may only be used under the MIT license.
       'webkitAnimationEnd': '__reset'
     },
 
-    __computeSpinnerContainerClassName: function(active, coolingDown) {
+    __computeContainerClasses: function(active, coolingDown) {
       return [
         active || coolingDown ? 'active' : '',
         coolingDown ? 'cooldown' : ''

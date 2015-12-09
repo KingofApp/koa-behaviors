@@ -14,12 +14,6 @@ This code may only be used under the MIT license.
 
 <script>
   Polymer.KoaDropdownMenuBehaviorImpl = {
-    hostAttributes: {
-      'aria-autocomplete': 'none',
-      'aria-haspopup': 'true',
-      role: 'combobox'
-    },
-
     /**
      * Fired when the dropdown opens.
      *
@@ -31,6 +25,12 @@ This code may only be used under the MIT license.
      *
      * @event dropdown-close
      */
+
+    hostAttributes: {
+      'aria-autocomplete': 'none',
+      'aria-haspopup': 'true',
+      role: 'combobox'
+    },
 
     properties: {
       /**
@@ -51,17 +51,6 @@ This code may only be used under the MIT license.
        */
       selectedItem: {
         type: Object,
-        notify: true,
-        readOnly: true
-      },
-
-      /**
-       * The value for this element that will be used when submitting in
-       * a form. It is read only, and will always have the same value
-       * as `selectedItemLabel`.
-       */
-      value: {
-        type: String,
         notify: true,
         readOnly: true
       },
@@ -115,6 +104,14 @@ This code may only be used under the MIT license.
       verticalAlign: {
         type: String,
         value: 'top'
+      },
+
+      /**
+       * The vertical offset to the menu dropdown
+       */
+      verticalOffset: {
+        type: Number,
+        value: 8
       }
     },
 

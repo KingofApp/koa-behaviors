@@ -17,6 +17,19 @@ This code may only be used under the MIT license.
       tabindex: 0
     },
 
+    properties: {
+      /**
+       * Fired when the checked state changes due to user interaction.
+       *
+       * @event change
+       */
+      /**
+       * Fired when the checked state changes.
+       *
+       * @event iron-change
+       */
+    },
+
     listeners: {
       track: '_ontrack'
     },
@@ -53,6 +66,18 @@ This code may only be used under the MIT license.
     _trackEnd: function(track) {
       this.$.toggleButton.classList.remove('dragging');
       this.transform('', this.$.toggleButton);
+    },
+
+    /**
+     * Synchronizes the element's `active` and `checked` state.
+     */
+    _buttonStateChanged: function() {
+      if (this.disabled) {
+        return;
+      }
+      if (this.isAttached) {
+        this.checked = this.active;
+      }
     }
   };
 

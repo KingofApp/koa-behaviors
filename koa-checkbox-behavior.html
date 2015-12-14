@@ -17,6 +17,24 @@ This code may only be used under the MIT license.
       tabindex: 0
     },
 
+    properties: {
+      /**
+       * Fired when the checked state changes due to user interaction.
+       *
+       * @event change
+       */
+
+      /**
+       * Fired when the checked state changes.
+       *
+       * @event iron-change
+       */
+      ariaActiveAttribute: {
+        type: String,
+        value: 'aria-checked'
+      }
+    },
+
     _computeCheckboxClass: function(checked, invalid) {
       var className = '';
       if (checked) {
@@ -30,6 +48,18 @@ This code may only be used under the MIT license.
 
     _computeCheckmarkClass: function(checked) {
       return checked ? '' : 'hidden';
+    },
+
+    /**
+     * Synchronizes the element's `active` and `checked` state.
+     */
+    _buttonStateChanged: function() {
+      if (this.disabled) {
+        return;
+      }
+      if (this.isAttached) {
+        this.checked = this.active;
+      }
     }
   };
 

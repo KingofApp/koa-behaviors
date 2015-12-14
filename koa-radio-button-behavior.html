@@ -19,6 +19,12 @@ This code may only be used under the MIT license.
 
     properties: {
       /**
+       * Fired when the checked state changes due to user interaction.
+       *
+       * @event change
+       */
+
+      /**
        * Fired when the checked state changes.
        *
        * @event iron-change
@@ -26,6 +32,18 @@ This code may only be used under the MIT license.
       ariaActiveAttribute: {
         type: String,
         value: 'aria-checked'
+      }
+    },
+
+    /**
+     * Synchronizes the element's `active` and `checked` state.
+     */
+    _buttonStateChanged: function() {
+      if (this.disabled) {
+        return;
+      }
+      if (this.isAttached) {
+        this.checked = this.active;
       }
     }
   };

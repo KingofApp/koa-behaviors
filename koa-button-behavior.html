@@ -33,6 +33,14 @@ This code may only be used under the MIT license.
         reflectToAttribute: true,
         value: false
       }
+    },
+
+    observers: [
+      '_computeKeyboardClass(receivedFocusFromKeyboard)'
+    ],
+
+    _computeKeyboardClass: function(receivedFocusFromKeyboard) {
+      this.classList.toggle('keyboard-focus', receivedFocusFromKeyboard);
     }
   };
 

@@ -6,17 +6,200 @@ This code may only be used under the MIT license.
 
 <link rel="import" href="../polymer/polymer.html">
 <link rel="import" href="../iron-overlay-behavior/iron-overlay-behavior.html">
+<link rel="import" href="../neon-animation/neon-animation-runner-behavior.html">
 
 <script>
   Polymer.KoaDialogBehaviorImpl = {
     hostAttributes: {
       'role': 'dialog',
       tabindex: -1
+    },
+
+    properties: {
+      /**
+       * If `modal` is true, this implies `no-cancel-on-outside-click` and `with-backdrop`.
+       */
+      modal: {
+        observer: '_modalChanged',
+        type: Boolean,
+        value: false
+      },
+
+      /** @type {?Node} */
+      _lastFocusedElement: {
+        type: Object
+      },
+
+      _boundOnFocus: {
+        type: Function,
+        value: function() {
+          return this._onFocus.bind(this);
+        }
+      },
+
+      _boundOnBackdropClick: {
+        type: Function,
+        value: function() {
+          return this._onBackdropClick.bind(this);
+        }
+      }
+    },
+
+    listeners: {
+      'tap': '_onDialogClick',
+      'iron-overlay-opened': '_onIronOverlayOpened',
+      'iron-overlay-closed': '_onIronOverlayClosed',
+      'neon-animation-finish': '_onNeonAnimationFinish'
+    },
+
+    attached: function() {
+      this._observer = this._observe(this);
+      this._updateAriaLabelledBy();
+    },
+
+    detached: function() {
+      if (this._observer) {
+        this._observer.disconnect();
+      }
+    },
+
+    _observe: function(node) {
+      var observer = new MutationObserver(function() {
+        this._updateAriaLabelledBy();
+      }.bind(this));
+      observer.observe(node, {
+        childList: true,
+        subtree: true
+      });
+      return observer;
+    },
+
+    _modalChanged: function() {
+      if (this.modal) {
+        this.setAttribute('aria-modal', 'true');
+      } else {
+        this.setAttribute('aria-modal', 'false');
+      }
+      // modal implies noCancelOnOutsideClick and withBackdrop if true, don't overwrite
+      // those properties otherwise.
+      if (this.modal) {
+        this.noCancelOnOutsideClick = true;
+        this.withBackdrop = true;
+      }
+    },
+
+    _updateAriaLabelledBy: function() {
+      var header = Polymer.dom(this).querySelector('h2');
+      if (!header) {
+        this.removeAttribute('aria-labelledby');
+        return;
+      }
+      var headerId = header.getAttribute('id');
+      if (headerId && this.getAttribute('aria-labelledby') === headerId) {
+        return;
+      }
+      // set aria-describedBy to the header element
+      var labelledById;
+      if (headerId) {
+        labelledById = headerId;
+      } else {
+        labelledById = 'paper-dialog-header-' + new Date().getUTCMilliseconds();
+        header.setAttribute('id', labelledById);
+      }
+      this.setAttribute('aria-labelledby', labelledById);
+    },
+
+    _updateClosingReasonConfirmed: function(confirmed) {
+      this.closingReason = this.closingReason || {};
+      this.closingReason.confirmed = confirmed;
+    },
+
+    _onDialogClick: function(event) {
+      var target = event.target;
+      while (target && target !== this) {
+        if (target.hasAttribute) {
+          if (target.hasAttribute('dialog-dismiss')) {
+            this._updateClosingReasonConfirmed(false);
+            this.close();
+            break;
+          } else if (target.hasAttribute('dialog-confirm')) {
+            this._updateClosingReasonConfirmed(true);
+            this.close();
+            break;
+          }
+        }
+        target = target.parentNode;
+      }
+    },
+
+    _onIronOverlayOpened: function() {
+      if (this.modal) {
+        document.body.addEventListener('focus', this._boundOnFocus, true);
+        this.backdropElement.addEventListener('click', this._boundOnBackdropClick);
+      }
+    },
+
+    _onIronOverlayClosed: function() {
+      document.body.removeEventListener('focus', this._boundOnFocus, true);
+      this.backdropElement.removeEventListener('click', this._boundOnBackdropClick);
+    },
+
+    _onFocus: function(event) {
+      if (this.modal) {
+        var target = event.target;
+        while (target && target !== this && target !== document.body) {
+          target = target.parentNode;
+        }
+        if (target) {
+          if (target === document.body) {
+            if (this._lastFocusedElement) {
+              this._lastFocusedElement.focus();
+            } else {
+              this._focusNode.focus();
+            }
+          } else {
+            this._lastFocusedElement = event.target;
+          }
+        }
+      }
+    },
+
+    _onBackdropClick: function() {
+      if (this.modal) {
+        if (this._lastFocusedElement) {
+          this._lastFocusedElement.focus();
+        } else {
+          this._focusNode.focus();
+        }
+      }
+    },
+
+    _renderOpened: function() {
+      if (this.withBackdrop) {
+        this.backdropElement.open();
+      }
+      this.playAnimation('entry');
+    },
+
+    _renderClosed: function() {
+      if (this.withBackdrop) {
+        this.backdropElement.close();
+      }
+      this.playAnimation('exit');
+    },
+
+    _onNeonAnimationFinish: function() {
+      if (this.opened) {
+        this._finishRenderOpened();
+      } else {
+        this._finishRenderClosed();
+      }
     }
   };
 
   Polymer.KoaDialogBehavior = [
     Polymer.IronOverlayBehavior,
+    Polymer.NeonAnimationRunnerBehavior,
     Polymer.KoaDialogBehaviorImpl
   ];
 </script>

@@ -53,6 +53,12 @@ This code may only be used under the MIT license.
       this._updateTarget();
     },
 
+    attributeChanged: function (name, type) {
+      if (name === 'hidden') {
+        this.updatePosition();
+      }
+    },
+
     _forChanged: function() {
       // The first time the property is set is before the badge is attached,
       // which means we're not ready to position it yet.

@@ -20,7 +20,7 @@
   },
   "license": "MIT",
   "dependencies": {
-    "polymer": "Polymer/polymer#^1.1.0",
+    "polymer": "Polymer/polymer#^1.2.0",
     "iron-a11y-keys-behavior": "PolymerElements/iron-a11y-keys-behavior#^1.0.0",
     "iron-behaviors": "PolymerElements/iron-behaviors#^1.0.0",
     "iron-checked-element-behavior": "PolymerElements/iron-checked-element-behavior#^1.0.0",

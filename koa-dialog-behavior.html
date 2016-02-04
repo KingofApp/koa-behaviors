@@ -158,6 +158,7 @@ This code may only be used under the MIT license.
     },
 
     _renderOpened: function() {
+      this.cancelAnimation();
       if (this.withBackdrop) {
         this.backdropElement.open();
       }
@@ -165,6 +166,7 @@ This code may only be used under the MIT license.
     },
 
     _renderClosed: function() {
+      this.cancelAnimation();
       if (this.withBackdrop) {
         this.backdropElement.close();
       }

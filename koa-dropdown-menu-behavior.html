@@ -13,18 +13,6 @@ This code may only be used under the MIT license.
 
 <script>
   Polymer.KoaDropdownMenuBehaviorImpl = {
-    /**
-     * Fired when the dropdown opens.
-     *
-     * @event dropdown-open
-     */
-
-    /**
-     * Fired when the dropdown closes.
-     *
-     * @event dropdown-close
-     */
-
     hostAttributes: {
       'aria-autocomplete': 'none',
       'aria-haspopup': 'true',
@@ -66,6 +54,13 @@ This code may only be used under the MIT license.
        */
       placeholder: {
         type: String
+      },
+
+      /**
+       * The error message to display when invalid.
+       */
+      errorMessage: {
+          type: String
       },
 
       /**

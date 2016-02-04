@@ -51,6 +51,9 @@ This code may only be used under the MIT license.
       /**
        * Returns true if the value is invalid. Bind this to both the `<koa-input-container>`'s
        * and the input's `invalid` property.
+       *
+       * If `autoValidate` is true, the `invalid` attribute is managed automatically,
+       * which can clobber attempts to manage it manually.
        */
       invalid: {
         type: Boolean,

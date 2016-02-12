@@ -26,12 +26,12 @@ This code may only be used under the MIT license.
     },
 
     observers: [
-      '_modalChanged(modal, _readied)',
-      'neon-animation-finish': '_onNeonAnimationFinish'
+      '_modalChanged(modal, _readied)'
     ],
 
     listeners: {
-      'tap': '_onDialogClick'
+      'tap': '_onDialogClick',
+      'neon-animation-finish': '_onNeonAnimationFinish'
     },
 
     ready: function () {

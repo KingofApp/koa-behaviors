@@ -294,13 +294,8 @@ This code may only be used under the MIT license.
     },
 
     listeners: {
-      'addon-attached': '_onAddonAttached',
-      'focus': '_onFocus'
+      'addon-attached': '_onAddonAttached'
     },
-
-    observers: [
-      '_focusedControlStateChanged(focused)'
-    ],
 
     keyBindings: {
       'shift+tab:keydown': '_onShiftTabDown'
@@ -354,12 +349,15 @@ This code may only be used under the MIT license.
     },
 
     /**
-     * Forward focus to inputElement
+     * Forward focus to inputElement. Overriden from IronControlState.
      */
-    _onFocus: function() {
-      if (!this._shiftTabPressed) {
+    _focusBlurHandler: function(event) {
+      if (this._shiftTabPressed)
+        return;
+      Polymer.IronControlState._focusBlurHandler.call(this, event);
+      // Forward the focus to the nested input.
+      if (this.focused)
         this._focusableElement.focus();
-      }
     },
 
     /**
@@ -403,24 +401,6 @@ This code may only be used under the MIT license.
       } catch (e) {
         // Just set the value and give up on the caret.
         this.value = newValue;
-      }
-    },
-
-    _focusedControlStateChanged: function(focused) {
-      // IronControlState stops the focus and blur events in order to redispatch them on the host
-      // element, but koa-input-container listens to those events. Since there are more
-      // pending work on focus/blur in IronControlState, I'm putting in this hack to get the
-      // input focus state working for now.
-      if (!this.$.container) {
-        this.$.container = Polymer.dom(this.root).querySelector('.input-container');
-        if (!this.$.container) {
-          return;
-        }
-      }
-      if (focused) {
-        this.$.container._onFocus();
-      } else {
-        this.$.container._onBlur();
       }
     },
 
@@ -573,14 +553,15 @@ This code may only be used under the MIT license.
       }
       this.addEventListener('focus', this._boundOnFocus, true);
       this.addEventListener('blur', this._boundOnBlur, true);
+    },
+
+    attached: function() {
       if (this.attrForValue) {
         this._inputElement.addEventListener(this._valueChangedEvent, this._boundValueChanged);
       } else {
         this.addEventListener('input', this._onInput);
       }
-    },
 
-    attached: function() {
       // Only validate when attached if the input already has a value.
       if (this._inputElementValue != '') {
         this._handleValueAndAutoValidate(this._inputElement);
@@ -712,12 +693,12 @@ This code may only be used under the MIT license.
     },
 
     /**
-     * The function called by `<koa-input-container>` when the input value or validity changes.
+     * The function called by `<paper-input-container>` when the input value or validity changes.
      * @param {{
-     *   inputElement: (Node|undefined),
+     *   inputElement: (Element|undefined),
      *   value: (string|undefined),
-     *   invalid: (boolean|undefined)
-     * }} state All properties are optional -
+     *   invalid: boolean
+     * }} state -
      *     inputElement: The input element.
      *     value: The input value.
      *     invalid: True if the input value is invalid.
@@ -739,6 +720,17 @@ This code may only be used under the MIT license.
       }
     },
 
+    /**
+     * This overrides the update function in PaperInputAddonBehavior.
+     * @param {{
+     *   inputElement: (Element|undefined),
+     *   value: (string|undefined),
+     *   invalid: boolean
+     * }} state -
+     *     inputElement: The input element.
+     *     value: The input value.
+     *     invalid: True if the input value is invalid.
+     */
     update: function(state) {
       this._setInvalid(state.invalid);
     }
@@ -758,6 +750,17 @@ This code may only be used under the MIT license.
       }
     },
 
+    /**
+     * This overrides the update function in PaperInputAddonBehavior.
+     * @param {{
+     *   inputElement: (Element|undefined),
+     *   value: (string|undefined),
+     *   invalid: boolean
+     * }} state -
+     *     inputElement: The input element.
+     *     value: The input value.
+     *     invalid: True if the input value is invalid.
+     */
     update: function(state) {
       if (!state.inputElement) {
         return;
@@ -765,14 +768,13 @@ This code may only be used under the MIT license.
 
       state.value = state.value || '';
 
-      // Account for the textarea's new lines.
-      var str = state.value.replace(/(\r\n|\n|\r)/g, '--').length;
+      var counter = state.value.length.toString();
 
       if (state.inputElement.hasAttribute('maxlength')) {
-        str += '/' + state.inputElement.getAttribute('maxlength');
+        counter += '/' + state.inputElement.getAttribute('maxlength');
       }
 
-      this._charCounterStr = str;
+      this._charCounterStr = counter;
     }
   }
 

@@ -1,6 +1,6 @@
 {
   "name": "koa-behaviors",
-  "version": "0.9.1",
+  "version": "0.10.0",
   "description": "Common behaviors across the KoA elements",
   "authors": [
     "Abdón Rodríguez Davila <thepeer@kingofapp.es>"

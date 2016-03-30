@@ -13,6 +13,12 @@ This code may only be used under the MIT license.
     hostAttributes: {
       role: 'option',
       tabindex: 0
+    },
+
+    attached: function() {
+      if (this.queryEffectiveChildren('[item-icon]')) {
+        this.$.contentIcon.removeAttribute('hidden');
+      }
     }
   };
 
